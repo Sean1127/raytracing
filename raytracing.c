@@ -249,12 +249,13 @@ double fresnel(const point3 r, const point3 l,
 }
 
 /* @param t distance */
-static intersection ray_hit_object(const point3 e, const point3 d,
-                                   double t0, double t1,
-                                   const rectangular_node rectangulars,
-                                   rectangular_node *hit_rectangular,
-                                   const sphere_node spheres,
-                                   sphere_node *hit_sphere)
+static inline __attribute__((always_inline))
+intersection ray_hit_object(const point3 e, const point3 d,
+                            double t0, double t1,
+                            const rectangular_node rectangulars,
+                            rectangular_node *hit_rectangular,
+                            const sphere_node spheres,
+                            sphere_node *hit_sphere)
 {
     /* set these to not hit */
     *hit_rectangular = NULL;
@@ -351,13 +352,14 @@ void protect_color_overflow(color c)
         if (c[i] > 1.0) c[i] = 1.0;
 }
 
-static unsigned int ray_color(const point3 e, double t,
-                              const point3 d,
-                              idx_stack *stk,
-                              const rectangular_node rectangulars,
-                              const sphere_node spheres,
-                              const light_node lights,
-                              color object_color, int bounces_left)
+static inline __attribute__((always_inline))
+unsigned int ray_color(const point3 e, double t,
+                       const point3 d,
+                       idx_stack *stk,
+                       const rectangular_node rectangulars,
+                       const sphere_node spheres,
+                       const light_node lights,
+                       color object_color, int bounces_left)
 {
     rectangular_node hit_rec = NULL, light_hit_rec = NULL;
     sphere_node hit_sphere = NULL, light_hit_sphere = NULL;
@@ -463,6 +465,7 @@ static unsigned int ray_color(const point3 e, double t,
 }
 
 /* @param background_color this is not ambient light */
+inline __attribute__((always_inline))
 void raytracing(uint8_t *pixels, color background_color,
                 rectangular_node rectangulars, sphere_node spheres,
                 light_node lights, const viewpoint *view,
