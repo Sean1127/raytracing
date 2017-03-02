@@ -17,10 +17,11 @@
 /* @param t t distance
  * @return 1 means hit, otherwise 0
  */
-static int raySphereIntersection(const point3 ray_e,
-                                 const point3 ray_d,
-                                 const sphere *sph,
-                                 intersection *ip, double *t1)
+static inline __attribute__((always_inline))
+int raySphereIntersection(const point3 ray_e,
+                          const point3 ray_d,
+                          const sphere *sph,
+                          intersection *ip, double *t1)
 {
     point3 l;
     subtract_vector(sph->center, ray_e, l);
@@ -47,10 +48,11 @@ static int raySphereIntersection(const point3 ray_e,
 }
 
 /* @return 1 means hit, otherwise 0; */
-static int rayRectangularIntersection(const point3 ray_e,
-                                      const point3 ray_d,
-                                      rectangular *rec,
-                                      intersection *ip, double *t1)
+static inline __attribute__((always_inline))
+int rayRectangularIntersection(const point3 ray_e,
+                               const point3 ray_d,
+                               rectangular *rec,
+                               intersection *ip, double *t1)
 {
     point3 e01, e03, p;
     subtract_vector(rec->vertices[1], rec->vertices[0], e01);
@@ -126,9 +128,10 @@ static int rayRectangularIntersection(const point3 ray_e,
     return 1;
 }
 
-static void localColor(color local_color,
-                       const color light_color, double diffuse,
-                       double specular, const object_fill *fill)
+static inline __attribute__((always_inline))
+void localColor(color local_color,
+                const color light_color, double diffuse,
+                double specular, const object_fill *fill)
 {
     color ambi = { 0.1, 0.1, 0.1 };
     color diff, spec, lightCo, surface;
@@ -158,10 +161,11 @@ static void localColor(color local_color,
  * @param l direction of intersection to light
  * @param n surface normal
  */
-static void compute_specular_diffuse(double *diffuse,
-                                     double *specular,
-                                     const point3 d, const point3 l,
-                                     const point3 n, double phong_pow)
+static inline __attribute__((always_inline))
+void compute_specular_diffuse(double *diffuse,
+                              double *specular,
+                              const point3 d, const point3 l,
+                              const point3 n, double phong_pow)
 {
     point3 d_copy, l_copy, middle, r;
 
@@ -193,7 +197,8 @@ static void compute_specular_diffuse(double *diffuse,
  * @param d direction of primary ray into intersection
  * @param n surface normal at intersection
  */
-static void reflection(point3 r, const point3 d, const point3 n)
+static inline __attribute__((always_inline))
+void reflection(point3 r, const point3 d, const point3 n)
 {
     /* r = d - 2(d . n)n */
     multiply_vector(n, -2.0 * dot_product(d, n), r);
@@ -201,8 +206,9 @@ static void reflection(point3 r, const point3 d, const point3 n)
 }
 
 /* reference: https://www.opengl.org/sdk/docs/man/html/refract.xhtml */
-static void refraction(point3 t, const point3 I, const point3 N,
-                       double n1, double n2)
+static inline __attribute__((always_inline))
+void refraction(point3 t, const point3 I, const point3 N,
+                double n1, double n2)
 {
     double eta = n1 / n2;
     double dot_NI = dot_product(N,I);
@@ -225,8 +231,9 @@ static void refraction(point3 t, const point3 I, const point3 N,
  *
  * reference: http://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf
  */
-static double fresnel(const point3 r, const point3 l,
-                      const point3 normal, double n1, double n2)
+static inline __attribute__((always_inline))
+double fresnel(const point3 r, const point3 l,
+               const point3 normal, double n1, double n2)
 {
     /* TIR */
     if (length(l) < 0.99)
@@ -287,10 +294,11 @@ static intersection ray_hit_object(const point3 e, const point3 d,
 /* @param d direction of ray
  * @param w basic vectors
  */
-static void rayConstruction(point3 d, const point3 u, const point3 v,
-                            const point3 w, unsigned int i, unsigned int j,
-                            const viewpoint *view, unsigned int width,
-                            unsigned int height)
+static inline __attribute__((always_inline))
+void rayConstruction(point3 d, const point3 u, const point3 v,
+                     const point3 w, unsigned int i, unsigned int j,
+                     const viewpoint *view, unsigned int width,
+                     unsigned int height)
 {
     double xmin = -0.0175;
     double ymin = -0.0175;
@@ -317,8 +325,9 @@ static void rayConstruction(point3 d, const point3 u, const point3 v,
     normalize(d);
 }
 
-static void calculateBasisVectors(point3 u, point3 v, point3 w,
-                                  const viewpoint *view)
+static inline __attribute__((always_inline))
+void calculateBasisVectors(point3 u, point3 v, point3 w,
+                           const viewpoint *view)
 {
     /* w  */
     COPY_POINT3(w, view->vpn);
@@ -335,7 +344,8 @@ static void calculateBasisVectors(point3 u, point3 v, point3 w,
 }
 
 /* @brief protect color value overflow */
-static void protect_color_overflow(color c)
+static inline __attribute__((always_inline))
+void protect_color_overflow(color c)
 {
     for (int i = 0; i < 3; i++)
         if (c[i] > 1.0) c[i] = 1.0;
