@@ -39,35 +39,31 @@ int main()
     sphere_node spheres = NULL;
     color background = { 0.0, 0.1, 0.1 };
     struct timespec start, end;
-    int thread_count;
+    int thread_count = 8;
 
 #include "use-models.h"
-    for (thread_count = 1; thread_count < 17; thread_count++)
-        for (int i = 0; i < 5; i++) {
 
-            /* allocate by the given resolution */
-            pixels = malloc(sizeof(unsigned char) * ROWS * COLS * 3);
-            if (!pixels) exit(-1);
+    /* allocate by the given resolution */
+    pixels = malloc(sizeof(unsigned char) * ROWS * COLS * 3);
+    if (!pixels) exit(-1);
 
-            //printf("# Rendering scene\n");
-            /* do the ray tracing with the given geometry */
-            clock_gettime(CLOCK_REALTIME, &start);
-            raytracing(pixels, background, rectangulars, spheres, lights,
-                       &view, ROWS, COLS, thread_count);
-            clock_gettime(CLOCK_REALTIME, &end);
-            {
-                FILE *outfile = fopen(OUT_FILENAME, "wb");
-                write_to_ppm(outfile, pixels, ROWS, COLS);
-                fclose(outfile);
-            }
+    printf("# Rendering scene\n");
+    /* do the ray tracing with the given geometry */
+    clock_gettime(CLOCK_REALTIME, &start);
+    raytracing(pixels, background, rectangulars, spheres, lights,
+               &view, ROWS, COLS, thread_count);
+    clock_gettime(CLOCK_REALTIME, &end);
+    {
+        FILE *outfile = fopen(OUT_FILENAME, "wb");
+        write_to_ppm(outfile, pixels, ROWS, COLS);
+        fclose(outfile);
+    }
 
-            delete_rectangular_list(&rectangulars);
-            delete_sphere_list(&spheres);
-            delete_light_list(&lights);
-            free(pixels);
-            //printf("Done!\n");
-            //printf("Execution time of raytracing() : %lf sec\n", diff_in_second(start, end));
-            printf("%d: %lf sec\n", thread_count, diff_in_second(start, end));
-        }
+    delete_rectangular_list(&rectangulars);
+    delete_sphere_list(&spheres);
+    delete_light_list(&lights);
+    free(pixels);
+    printf("Done!\n");
+    printf("Execution time of raytracing() : %lf sec\n", diff_in_second(start, end));
     return 0;
 }
