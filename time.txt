@@ -1,6 +1,1 @@
-origin 
-unroll_loop 2.203631
-force_inline 1.868269
-pthread 1.030958xxx
-openmp 0.855305
--O2 0.757749
+method 3.138760 2.203631 1.868269 0.859353 0.855305 0.757749
